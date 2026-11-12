@@ -446,7 +446,7 @@ function reducido(){try{return window.matchMedia('(prefers-reduced-motion: reduc
 /* ================= Estado ================= */
 function ajustesDef(){return {pesas:[{id:'m15',tipo:'mancuerna',kg:15,n:1},{id:'r4',tipo:'rusa',kg:4,n:2}],obj:[]};}
 var S={vista:'hoy',pesaId:null,tecId:null,fecha:null,cont:null,mes:null,diaSel:null,dias:{},ajustes:ajustesDef(),
-       ui:{objAbierto:false,pesasAbierto:false,borrar:null,modoFoto:null,fotoGrande:false,objTec:false,np:{tipo:'mancuerna',kg:'',n:1},npErr:'',copiaMsg:'',copiaPend:null,pegar:false,pegado:'',instalarVisto:false}};
+       ui:{objAbierto:false,pesasAbierto:false,borrar:null,modoFoto:null,fotoGrande:false,objTec:false,np:{tipo:'mancuerna',kg:'',n:1},npErr:'',copiaMsg:'',copiaPend:null,pegar:false,pegado:'',verTexto:false,instalarVisto:false}};
 var L={uid:null,pend:{add:[],del:[]},ajSucio:false};
 var N={db:null,uid:null,refAj:null,colDias:null,autoDias:false,autoAj:false,colas:new Map(),fallo:null,intentando:false,lento:false,caido:false,reloj:0,tAj:0};
 var CLAVE='fierros.v1';
@@ -1054,6 +1054,15 @@ function guardarCopia(){
   }
   descargar();
 }
+function copiarCopia(){
+  var txt=textoCopia();
+  function listo(){marcarCopia();S.ui.verTexto=false;S.ui.copiaMsg='Copia copiada. Pegala en una nota o en un mail para guardarla.';render(false);}
+  function aMano(){S.ui.verTexto=true;S.ui.copiaMsg='';render(false);var t=document.getElementById('copia-salida');if(t){try{t.focus();t.select();}catch(e){}}}
+  try{
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(listo,aMano);
+    else aMano();
+  }catch(e){aMano();}
+}
 function leerCopia(txt){
   var x;try{x=JSON.parse(txt);}catch(e){return null;}
   if(!x||typeof x!=='object'||!x.dias||typeof x.dias!=='object')return null;
@@ -1082,7 +1091,9 @@ function copiaHTML(){
   var u=ultimaCopiaTxt();if(u)h+='<p class="nota">'+esc(u)+'</p>';
   h+='<button class="btn sec" data-acc="copia-guardar">Guardar una copia</button>';
   h+='<input class="oculto" id="copia-archivo" type="file" accept=".json,.txt,application/json,text/plain"><label class="btn sec" for="copia-archivo">Recuperar una copia</label>';
-  h+='<button class="enl" data-acc="copia-pegar" aria-expanded="'+!!S.ui.pegar+'">'+(S.ui.pegar?'Cerrar':'Tengo la copia como texto')+'</button>';
+  h+='<button class="enl" data-acc="copia-copiar">Copiar la copia como texto</button>';
+  if(S.ui.verTexto)h+='<div class="editor"><div class="np-fila"><label for="copia-salida">No se pudo copiar sola. Seleccioná todo este texto, copialo y guardalo en una nota o en un mail.</label><textarea id="copia-salida" rows="4" readonly>'+esc(textoCopia())+'</textarea></div></div>';
+  h+='<button class="enl" data-acc="copia-pegar" aria-expanded="'+!!S.ui.pegar+'">'+(S.ui.pegar?'Cerrar':'Pegar una copia que tengo como texto')+'</button>';
   if(S.ui.pegar)h+='<div class="editor"><div class="np-fila"><label for="copia-texto">Pegá acá el texto de la copia</label><textarea id="copia-texto" rows="4" autocomplete="off" autocapitalize="off" spellcheck="false">'+esc(S.ui.pegado)+'</textarea></div><button class="btn sec" data-acc="copia-leer">Revisar la copia</button></div>';
   if(S.ui.copiaPend){
     var c=S.ui.copiaPend;
@@ -1113,7 +1124,7 @@ function refrescar(){
   }else render(false);
 }
 function ir(v,ancla){
-  S.vista=v;S.ui.borrar=null;S.ui.copiaMsg='';S.ui.copiaPend=null;
+  S.vista=v;S.ui.borrar=null;S.ui.copiaMsg='';S.ui.copiaPend=null;S.ui.verTexto=false;
   try{if(location.hash!=='#'+v)location.hash=v;}catch(e){}
   render(true);
   if(ancla){var el=document.getElementById(ancla);if(el&&el.scrollIntoView)el.scrollIntoView();}
@@ -1185,6 +1196,7 @@ document.addEventListener('click',function(ev){
     case 'mes-hoy':S.mes=null;S.diaSel=null;render(false);break;
     case 'anotar-en':S.fecha=d.f===hoyISO()?null:d.f;ir('hoy','anotar');break;
     case 'copia-guardar':guardarCopia();break;
+    case 'copia-copiar':copiarCopia();break;
     case 'copia-pegar':S.ui.pegar=!S.ui.pegar;S.ui.copiaMsg='';render(false);break;
     case 'copia-leer':prepararCopia(S.ui.pegado);break;
     case 'copia-aplicar':aplicarCopia();break;

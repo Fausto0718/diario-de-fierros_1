@@ -5,7 +5,7 @@ App web para llevar la cuenta de las series con mancuerna y pesas rusas. Elegís
 ## Instalarla en el iPhone
 
 1. Abrí <https://fausto0718.github.io/diario-de-fierros_1/> en Safari.
-2. Tocá Compartir y después "Agregar a Inicio".
+2. Tocá Compartir y después "Agregar a Inicio". Si aparece la opción "Abrir como app web", dejala activada.
 3. Usala siempre desde ese ícono. Una vez abierta, funciona sin conexión.
 
 ## Tus datos

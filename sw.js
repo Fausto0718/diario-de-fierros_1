@@ -1,6 +1,6 @@
 /* Diario de fierros: guarda la app en el dispositivo para que abra sin conexión.
    Este archivo se genera solo. El nombre de la versión cambia cuando cambia cualquier archivo de la app. */
-const VERSION = "fierros-455ab33f88";
+const VERSION = "fierros-e90efc1820";
 const ARCHIVOS = [
   "./",
   "index.html",
